@@ -1,6 +1,6 @@
 # WindScope — UK day-ahead wind forecast decision pilot
 
-**A transparent, historical January 2026 pilot.** Built for the Gridbricks full-stack take-home assessment. React + Vite frontend, Python FastAPI backend, Docker Compose, Elexon BMRS wind forecast / actual data, and optional Vercel deployment. Includes Elexon source attribution.
+**A transparent, historical January 2026 pilot.** Built for the Gridbricks full-stack take-home assessment. React + Vite frontend, Python FastAPI backend, Docker Compose, Elexon BMRS wind forecast / actual data, and Vercel-hosted frontend/backend projects. Includes Elexon source attribution.
 
 > This template intentionally contains **no fabricated wind readings**. Run the Elexon import before presenting or deploying the dashboard. Do not claim metrics or coverage that you haven't verified against upstream data.
 
@@ -48,10 +48,11 @@ wind-decision-pilot/
 │   ├── src/main.jsx               # React dashboard, interactive dates/charts/table
 │   ├── src/styles.css
 │   ├── vite.config.js              # local API proxy
+│   ├── vercel.json                 # public frontend-to-backend API rewrites
 │   ├── package.json
 │   └── Dockerfile
 ├── docker-compose.yml             # frontend and backend for local pilot
-├── vercel.json                    # Vercel web + Python services and routing
+├── vercel.json                    # legacy single-project Services experiment
 └── README.md
 ```
 
@@ -104,19 +105,34 @@ npm run dev
 - `GET /api/days/2026-01-15`: 24 hourly rows and day scores.
 - `GET /api/export.csv`: auditable hourly forecast vs mean actual export.
 
-## Deploy to Vercel (public URL)
+## Public deployment — Vercel
 
-As of October 2026 Vercel supports multi-service projects with `vercel.json`: a Vite frontend and FastAPI Python backend in the same Vercel project. See [Vercel Python generally available](https://vercel.com/changelog/python-on-vercel-is-now-generally-available) and [Vercel Services](https://vercel.com/docs/services).
+**Live dashboard:** https://frontend-iota-seven-58.vercel.app/
 
-1. Run the Elexon fetch and tests locally **first**. Inspect API coverage, nonempty data and plotted points.
-2. Create a new **public GitHub repo with an anonymous random name** (for example `tq8v4r2a`, not your name, school or company); ensure you have authorization to publicly share the source data snapshot under Elexon's applicable usage terms. If snapshot redistribution rights are uncertain, keep the raw data out of public Git and arrange a permitted refresh path before deployment. Commit the project and real `backend/data/jan2026.json` only if allowed.
-3. Go to **vercel.com/new**, import that repo, and set the framework/project type to **Services**. Verify the `vercel.json` configuration is recognized, with `frontend/` as web and `backend/` as Python API.
-4. Deploy and verify `https://YOUR-APP.vercel.app/api/health` responds with `snapshot_ready:true` and that the main page displays charts. Test on a fresh private/incognito window without being logged in.
-5. Replace the placeholder `LIVE DEMO URL` below with the real deployment URL, and include it in the submission form.
+**Python API:** https://backend-six-alpha-27.vercel.app/
 
-**Live demo URL:** `TO BE INSERTED AFTER YOU DEPLOY AND TEST`
+**Repository:** https://github.com/vedpatel-real-ai/n7p4x2q9
 
-> Vercel's platform may change configuration or plan availability. If the Services project preset is absent, check Vercel's latest docs rather than claiming deployment succeeded. Alternatively deploy FastAPI separately to Heroku and Vite to Vercel with the proper API base URL/CORS update; that split is not packaged by default here.
+WindScope is deployed as **two Vercel projects** connected to the same GitHub repository:
+
+| Project | Vercel root directory | Framework | Role |
+| --- | --- | --- | --- |
+| `frontend` | `frontend/` | Vite | React dashboard |
+| `backend` | `backend/` | FastAPI | Historical snapshot and read-only API |
+
+The deployed frontend uses `frontend/vercel.json` to rewrite its `/api/:path*` requests to the FastAPI backend. The local Vite development server uses `frontend/vite.config.js` for an equivalent Docker-local proxy. The repository-root `vercel.json` represents an earlier single-project Services experiment, not the active two-project setup.
+
+### Verify before submitting
+
+In an incognito/private browser window, verify:
+
+1. [Dashboard](https://frontend-iota-seven-58.vercel.app/) loads the historical charts and dates with actual data, not an error or loading screen.
+2. [API health](https://frontend-iota-seven-58.vercel.app/api/health) reports `ok:true`, `snapshot_ready:true`, `periods:744`.
+3. [Analysis](https://frontend-iota-seven-58.vercel.app/api/analysis) reports `ready:true` and `summary.paired_periods:744`.
+4. [CSV](https://frontend-iota-seven-58.vercel.app/api/export.csv) downloads nonempty forecast-versus-generation rows.
+5. [Public repository](https://github.com/vedpatel-real-ai/n7p4x2q9) is readable without signing in.
+
+This is a retrospective pilot, not a continuously updating electricity-trading application. Local tests and an apparently successful Vercel build do not replace independent production checks.
 
 ## Quality evidence
 
@@ -171,4 +187,4 @@ Contains BMRS data © Elexon Limited copyright and database right 2026. The publ
 
 Deployment preflight: confirm `backend/data/jan2026.json` exists and is committed to the deployment repository (the starter excludes no `backend/data/` files via `.gitignore`); this includes processed generation readings obtained from Elexon. Check the deployed `/api/health` and `/api/analysis` routes after publishing, because local Docker's volume data does not automatically move to Vercel.
 
-Canonical deployment config: `vercel.json`. Earlier starter included `vercel.toml`; it is superseded for this pilot. The current documented multi-service JSON format uses service-specific roots with `/api/(.*)` and `/(.*)` rewrites.
+Production routing configuration is in `frontend/vercel.json`. The root `vercel.json` is from an earlier Services experiment and is not used by the active two-project deployment.
