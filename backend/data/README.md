@@ -1,0 +1,1 @@
+After running the fetch script, `jan2026.json` is written here. It is deliberately absent from the template: publish **real Elexon records**, never generated or invented numerical findings. Include this snapshot in the public repo only after inspecting coverage and source counts.
