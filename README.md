@@ -1,6 +1,6 @@
 # WindScope — UK day-ahead wind forecast decision pilot
 
-**A transparent, historical January 2026 pilot.** Built for the Gridbricks full-stack take-home assessment. React + Vite frontend, Python FastAPI backend, Docker Compose, Elexon BMRS wind forecast / actual data, and Vercel-hosted frontend/backend projects. Includes Elexon source attribution.
+**A transparent, historical January 2026 pilot.** Built for the Gridbricks full-stack take-home assessment. React + Vite frontend, Python FastAPI backend, Docker Compose, Elexon BMRS wind forecast / actual data, and Vercel-hosted frontend/backend projects. Includes Elexon source attribution..
 
 > This template intentionally contains **no fabricated wind readings**. Run the Elexon import before presenting or deploying the dashboard. Do not claim metrics or coverage that you haven't verified against upstream data.
 
